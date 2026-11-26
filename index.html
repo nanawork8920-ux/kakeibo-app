@@ -15,7 +15,7 @@
   <header class="app-header">
     <div class="header-left"></div>
 
-<h1 class="app-title">
+    <h1 class="app-title">
       <span>家計簿帳</span>
     </h1>
 
@@ -28,7 +28,7 @@
       </button>
 
       <div id="settingsMenu" class="dropdown-menu hidden">
-        <button id="openSavingsBtn" type="button">❀ 目標の設定</button>
+        <button id="openSavingsBtn" type="button">❀ 目標貯金の設定</button>
         <button id="openCategoriesBtn" type="button">❀ 収支項目の設定</button>
         <button id="openAppBtn" type="button">❀ アプリ設定</button>
       </div>
@@ -38,7 +38,7 @@
   <main class="container">
     <!-- 目標貯金（最大3種類） -->
     <section class="card">
-      <h2 class="card-title">❀ 目標</h2>
+      <h2 class="card-title">❀ 目標貯金</h2>
       <div id="savingsContainer" class="savings-grid"></div>
     </section>
 
@@ -87,11 +87,69 @@
     </section>
   </main>
 
+  <!-- 初回・かんたん初期設定モーダル -->
+  <div id="modal-setup" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>❀ はじめての初期設定</h3>
+        <button type="button" class="close-modal-btn" data-close="modal-setup">×</button>
+      </div>
+      <p class="setup-note">
+        データは今お使いのブラウザに自動保存されます。まずは見た目と、最初の目標貯金（任意）を設定しましょう。
+      </p>
+
+      <div class="setting-block">
+        <label class="setting-label">カラーテーマ</label>
+        <div class="option-row">
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-sakura">
+            <span class="dot" style="background:#c996a5;"></span>さくら
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-yomogi">
+            <span class="dot" style="background:#8fa889;"></span>よもぎ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-anko">
+            <span class="dot" style="background:#b7a8be;"></span>あんこ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-kinako">
+            <span class="dot" style="background:#bfa470;"></span>きなこ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-milk">
+            <span class="dot" style="background:#e8e4dc;"></span>みるく
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <label class="setting-label">フォント</label>
+        <div class="option-row">
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-gothic">ゴシック</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-handwriting">手書き風</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-calligraphy">おしゃれな習字風</button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <label class="setting-label">最初の目標貯金（任意・あとからでもOK）</label>
+        <div class="form-row">
+          <input type="text" id="setupSavName" placeholder="目標名（例：旅行・引っ越し）">
+          <input type="number" id="setupSavTarget" placeholder="目標金額" min="0">
+          <input type="number" id="setupSavCurrent" placeholder="現在の貯金額" min="0">
+          <input type="date" id="setupSavDate">
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="completeSetupBtn" type="button" class="primary-btn">この内容で始める</button>
+        <button id="skipSetupBtn" type="button" class="secondary-btn">空のまま始める</button>
+      </div>
+    </div>
+  </div>
+
   <!-- モーダル1：目標貯金の設定 -->
   <div id="modal-savings" class="modal hidden">
     <div class="modal-box">
       <div class="modal-head">
-        <h3>❀ 目標の設定（最大3種類）</h3>
+        <h3>❀ 目標貯金の設定（最大3種類）</h3>
         <button type="button" class="close-modal-btn" data-close="modal-savings">×</button>
       </div>
       <div id="savingsFormList"></div>
@@ -165,8 +223,8 @@
         <label class="setting-label">フォント</label>
         <div class="option-row">
           <button type="button" class="opt-btn" data-setting="font" data-value="font-gothic">ゴシック</button>
-          <button type="button" class="opt-btn" data-setting="font" data-value="font-handwriting">手書き</button>
-          <button type="button" class="opt-btn" data-setting="font" data-value="font-calligraphy">習字</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-handwriting">手書き風</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-calligraphy">おしゃれな習字風</button>
         </div>
       </div>
 
@@ -176,6 +234,22 @@
           <button type="button" class="opt-btn" data-setting="size" data-value="size-small">小</button>
           <button type="button" class="opt-btn" data-setting="size" data-value="size-medium">中</button>
           <button type="button" class="opt-btn" data-setting="size" data-value="size-large">大</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="setting-block">
+        <label class="setting-label">初期設定とデータの保存管理</label>
+        <p class="setup-note">
+          ブラウザに自動保存されます。別端末への引き継ぎやバックアップ用にファイルを書き出せます。
+        </p>
+        <div class="action-row">
+          <button id="reopenSetupBtn" type="button" class="secondary-btn">初期設定を開く</button>
+          <button id="exportDataBtn" type="button" class="secondary-btn">データ書き出し</button>
+          <button id="importDataBtn" type="button" class="secondary-btn">データ読み込み</button>
+          <button id="resetAllBtn" type="button" class="danger-btn">すべてリセット</button>
+          <input type="file" id="importFileInput" accept=".json,application/json" class="hidden">
         </div>
       </div>
     </div>
