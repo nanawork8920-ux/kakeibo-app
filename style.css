@@ -479,3 +479,46 @@ input, select {
   border-top: 1px dashed var(--border);
   margin: 16px 0;
 }
+.setup-note {
+  font-size: 0.88em;
+  opacity: 0.85;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.secondary-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  border-color: var(--accent-strong);
+}
+
+.danger-btn {
+  padding: 8px 14px;
+  border: 1px solid #d49a9a;
+  border-radius: 8px;
+  background: #fdf2f2;
+  color: #8b3a3a;
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background: #fae4e4;
+}
