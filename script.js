@@ -1,31 +1,25 @@
-const STORAGE_KEY = 'nagomiKakeiboV2';
+const STORAGE_KEY = 'nagomiKakeiboV3';
 
 const initialData = {
+  setupCompleted: false,
   settings: {
     theme: 'theme-sakura',
     font: 'font-gothic',
     size: 'size-medium'
   },
   savings: [
-    { name: '旅行資金', target: 100000, current: 35000, deadline: '2027-03-31' },
-    { name: '緊急予備費', target: 300000, current: 120000, deadline: '2027-12-31' },
+    { name: '', target: 0, current: 0, deadline: '' },
+    { name: '', target: 0, current: 0, deadline: '' },
     { name: '', target: 0, current: 0, deadline: '' }
   ],
   categories: [
-    { id: 'c1', type: 'expense', name: '食費', color: '#c996a5' },
-    { id: 'c2', type: 'expense', name: '日用品', color: '#8fa889' },
-    { id: 'c3', type: 'expense', name: '趣味・交際', color: '#bfa470' },
-    { id: 'c4', type: 'income', name: '給与', color: '#9a9398' }
+    { id: 'c_exp_1', type: 'expense', name: '食費', color: '#c996a5' },
+    { id: 'c_exp_2', type: 'expense', name: '日用品', color: '#8fa889' },
+    { id: 'c_exp_3', type: 'expense', name: '趣味・交際', color: '#bfa470' },
+    { id: 'c_inc_1', type: 'income', name: '給与', color: '#9a9398' }
   ],
-  recurring: [
-    { id: 'r1', title: '家賃', categoryId: 'c2', amount: 55000 },
-    { id: 'r2', title: '月給', categoryId: 'c4', amount: 220000 }
-  ],
-  transactions: [
-    { id: 1, date: '2026-11-24', type: 'income', categoryId: 'c4', amount: 220000, memo: '今月分給与' },
-    { id: 2, date: '2026-11-25', type: 'expense', categoryId: 'c1', amount: 1200, memo: 'スーパー買い物' },
-    { id: 3, date: '2026-11-26', type: 'expense', categoryId: 'c3', amount: 3500, memo: 'カフェ・本' }
-  ]
+  recurring: [],
+  transactions: []
 };
 
 let state = loadState();
@@ -37,11 +31,16 @@ function loadState() {
     if (!raw) return structuredClone(initialData);
     const parsed = JSON.parse(raw);
     return {
+      setupCompleted: Boolean(parsed.setupCompleted),
       settings: { ...initialData.settings, ...(parsed.settings || {}) },
-      savings: Array.isArray(parsed.savings) && parsed.savings.length === 3 ? parsed.savings : structuredClone(initialData.savings),
-      categories: Array.isArray(parsed.categories) ? parsed.categories : structuredClone(initialData.categories),
-      recurring: Array.isArray(parsed.recurring) ? parsed.recurring : structuredClone(initialData.recurring),
-      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : structuredClone(initialData.transactions)
+      savings: Array.isArray(parsed.savings) && parsed.savings.length === 3
+        ? parsed.savings
+        : structuredClone(initialData.savings),
+      categories: Array.isArray(parsed.categories) && parsed.categories.length > 0
+        ? parsed.categories
+        : structuredClone(initialData.categories),
+      recurring: Array.isArray(parsed.recurring) ? parsed.recurring : [],
+      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : []
     };
   } catch (_) {
     return structuredClone(initialData);
@@ -58,8 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupMenusAndModals();
   setupForms();
+  setupDataTools();
   applyAppearance();
   renderScreen();
+
+  if (!state.setupCompleted) {
+    openModal('modal-setup');
+  }
 });
 
 function setupMenusAndModals() {
@@ -91,12 +95,24 @@ function setupMenusAndModals() {
   if (openAppBtn) openAppBtn.addEventListener('click', () => openModal('modal-app'));
 
   document.querySelectorAll('.close-modal-btn').forEach((btn) => {
-    btn.addEventListener('click', () => closeAllModals());
+    btn.addEventListener('click', () => {
+      if (btn.dataset.close === 'modal-setup') {
+        state.setupCompleted = true;
+        persistState();
+      }
+      closeAllModals();
+    });
   });
 
   document.querySelectorAll('.modal').forEach((modal) => {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeAllModals();
+      if (e.target === modal) {
+        if (modal.id === 'modal-setup') {
+          state.setupCompleted = true;
+          persistState();
+        }
+        closeAllModals();
+      }
     });
   });
 
@@ -135,11 +151,14 @@ function setupForms() {
       const amountVal = Number(document.getElementById('txAmount').value);
       if (!amountVal || amountVal <= 0) return;
 
+      const catSelect = document.getElementById('txCategory');
+      if (!catSelect || !catSelect.value) return;
+
       state.transactions.unshift({
         id: Date.now(),
         date: document.getElementById('txDate').value,
         type: document.getElementById('txType').value,
-        categoryId: document.getElementById('txCategory').value,
+        categoryId: catSelect.value,
         amount: amountVal,
         memo: document.getElementById('txMemo').value.trim()
       });
@@ -148,6 +167,111 @@ function setupForms() {
       renderScreen();
       document.getElementById('txAmount').value = '';
       document.getElementById('txMemo').value = '';
+    });
+  }
+}
+
+function setupDataTools() {
+  const completeSetupBtn = document.getElementById('completeSetupBtn');
+  if (completeSetupBtn) {
+    completeSetupBtn.addEventListener('click', () => {
+      const name = document.getElementById('setupSavName').value.trim();
+      const target = Number(document.getElementById('setupSavTarget').value) || 0;
+      const current = Number(document.getElementById('setupSavCurrent').value) || 0;
+      const deadline = document.getElementById('setupSavDate').value;
+
+      if (name || target > 0 || current > 0 || deadline) {
+        state.savings[0] = { name, target, current, deadline };
+      }
+
+      state.setupCompleted = true;
+      persistState();
+      renderSavingsCards();
+      closeAllModals();
+    });
+  }
+
+  const skipSetupBtn = document.getElementById('skipSetupBtn');
+  if (skipSetupBtn) {
+    skipSetupBtn.addEventListener('click', () => {
+      state.setupCompleted = true;
+      persistState();
+      closeAllModals();
+    });
+  }
+
+  const reopenSetupBtn = document.getElementById('reopenSetupBtn');
+  if (reopenSetupBtn) {
+    reopenSetupBtn.addEventListener('click', () => openModal('modal-setup'));
+  }
+
+  const exportBtn = document.getElementById('exportDataBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const jsonStr = JSON.stringify(state, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const today = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `kakeibo-backup-${today}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  const importBtn = document.getElementById('importDataBtn');
+  const fileInput = document.getElementById('importFileInput');
+  if (importBtn && fileInput) {
+    importBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(String(reader.result));
+          if (!imported || typeof imported !== 'object') return;
+          state = {
+            setupCompleted: true,
+            settings: { ...initialData.settings, ...(imported.settings || {}) },
+            savings: Array.isArray(imported.savings) && imported.savings.length === 3
+              ? imported.savings
+              : structuredClone(initialData.savings),
+            categories: Array.isArray(imported.categories) && imported.categories.length > 0
+              ? imported.categories
+              : structuredClone(initialData.categories),
+            recurring: Array.isArray(imported.recurring) ? imported.recurring : [],
+            transactions: Array.isArray(imported.transactions) ? imported.transactions : []
+          };
+          persistState();
+          applyAppearance();
+          renderScreen();
+          highlightSelectedOptions();
+          alert('データを読み込みました。');
+        } catch (_) {
+          alert('JSONファイルを読み込めませんでした。形式を確認してください。');
+        } finally {
+          fileInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  const resetBtn = document.getElementById('resetAllBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      const ok = confirm('登録した収支・目標貯金・定期収支をすべて消去して初期状態に戻しますか？');
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = structuredClone(initialData);
+      persistState();
+      applyAppearance();
+      renderScreen();
+      openModal('modal-setup');
     });
   }
 }
@@ -161,6 +285,14 @@ function openModal(modalId) {
   if (!modal) return;
   modal.classList.remove('hidden');
 
+  if (modalId === 'modal-setup') {
+    const s0 = state.savings[0] || { name: '', target: 0, current: 0, deadline: '' };
+    document.getElementById('setupSavName').value = s0.name || '';
+    document.getElementById('setupSavTarget').value = s0.target || '';
+    document.getElementById('setupSavCurrent').value = s0.current || '';
+    document.getElementById('setupSavDate').value = s0.deadline || '';
+    highlightSelectedOptions();
+  }
   if (modalId === 'modal-savings') renderSavingsInputs();
   if (modalId === 'modal-categories') renderCategoryAndRecurringLists();
   if (modalId === 'modal-app') highlightSelectedOptions();
@@ -184,10 +316,13 @@ function renderSavingsCards() {
   if (!wrap) return;
   wrap.innerHTML = '';
 
+  let hasAny = false;
   state.savings.forEach((item, idx) => {
-    if (!item.name && Number(item.target) === 0) return;
     const target = Number(item.target) || 0;
     const current = Number(item.current) || 0;
+    if (!item.name && target === 0 && current === 0) return;
+    hasAny = true;
+
     const remain = Math.max(0, target - current);
     const rate = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
 
@@ -216,6 +351,10 @@ function renderSavingsCards() {
       </div>
     `;
   });
+
+  if (!hasAny) {
+    wrap.innerHTML = `<p class="setup-note">目標貯金はまだ登録されていません。右上の設定から追加できます。</p>`;
+  }
 }
 
 function renderSavingsInputs() {
@@ -276,6 +415,11 @@ function renderRecurringChips() {
   if (!area) return;
   area.innerHTML = '';
 
+  if (state.recurring.length === 0) {
+    area.innerHTML = `<span class="setup-note">定期収支はまだ未登録です（設定＞収支項目の設定から追加可能）。</span>`;
+    return;
+  }
+
   state.recurring.forEach((rec) => {
     const cat = state.categories.find((c) => c.id === rec.categoryId);
     if (!cat) return;
@@ -318,6 +462,11 @@ function renderHistoryList() {
   const list = document.getElementById('txHistory');
   if (!list) return;
   list.innerHTML = '';
+
+  if (state.transactions.length === 0) {
+    list.innerHTML = `<li style="justify-content:center; opacity:0.75;">収支の履歴はまだありません。</li>`;
+    return;
+  }
 
   state.transactions.slice(0, 25).forEach((tx) => {
     const cat = state.categories.find((c) => c.id === tx.categoryId) || { name: '未分類', color: '#aaa' };
@@ -364,10 +513,10 @@ function renderExpenseChart() {
   chartInstance = new Chart(canvas.getContext('2d'), {
     type: 'doughnut',
     data: {
-      labels,
+      labels: labels.length > 0 ? labels : ['支出なし'],
       datasets: [{
-        data: values,
-        backgroundColor: colors,
+        data: values.length > 0 ? values : [1],
+        backgroundColor: colors.length > 0 ? colors : ['#e6e2da'],
         borderWidth: 2,
         borderColor: '#ffffff'
       }]
