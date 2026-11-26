@@ -2,6 +2,10 @@ const STORAGE_KEY = 'nagomiKakeiboV3';
 
 const initialData = {
   setupCompleted: false,
+  profile: {
+    name: '',
+    email: ''
+  },
   settings: {
     theme: 'theme-sakura',
     font: 'font-gothic',
@@ -32,6 +36,7 @@ function loadState() {
     const parsed = JSON.parse(raw);
     return {
       setupCompleted: Boolean(parsed.setupCompleted),
+      profile: { ...initialData.profile, ...(parsed.profile || {}) },
       settings: { ...initialData.settings, ...(parsed.settings || {}) },
       savings: Array.isArray(parsed.savings) && parsed.savings.length === 3
         ? parsed.savings
@@ -175,6 +180,11 @@ function setupDataTools() {
   const completeSetupBtn = document.getElementById('completeSetupBtn');
   if (completeSetupBtn) {
     completeSetupBtn.addEventListener('click', () => {
+      state.profile = {
+        name: document.getElementById('setupUserName').value.trim(),
+        email: document.getElementById('setupUserEmail').value.trim()
+      };
+
       const name = document.getElementById('setupSavName').value.trim();
       const target = Number(document.getElementById('setupSavTarget').value) || 0;
       const current = Number(document.getElementById('setupSavCurrent').value) || 0;
@@ -197,6 +207,18 @@ function setupDataTools() {
       state.setupCompleted = true;
       persistState();
       closeAllModals();
+    });
+  }
+
+  const saveProfileBtn = document.getElementById('saveProfileBtn');
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener('click', () => {
+      state.profile = {
+        name: document.getElementById('appUserName').value.trim(),
+        email: document.getElementById('appUserEmail').value.trim()
+      };
+      persistState();
+      alert('プロフィールを保存しました。');
     });
   }
 
@@ -236,6 +258,7 @@ function setupDataTools() {
           if (!imported || typeof imported !== 'object') return;
           state = {
             setupCompleted: true,
+            profile: { ...initialData.profile, ...(imported.profile || {}) },
             settings: { ...initialData.settings, ...(imported.settings || {}) },
             savings: Array.isArray(imported.savings) && imported.savings.length === 3
               ? imported.savings
@@ -250,9 +273,9 @@ function setupDataTools() {
           applyAppearance();
           renderScreen();
           highlightSelectedOptions();
-          alert('データを読み込みました。');
+          alert('控えのデータを復元しました。');
         } catch (_) {
-          alert('JSONファイルを読み込めませんでした。形式を確認してください。');
+          alert('ファイルを読み込めませんでした。保存した控えファイルを選んでください。');
         } finally {
           fileInput.value = '';
         }
@@ -264,7 +287,7 @@ function setupDataTools() {
   const resetBtn = document.getElementById('resetAllBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      const ok = confirm('登録した収支・目標貯金・定期収支をすべて消去して初期状態に戻しますか？');
+      const ok = confirm('登録した収支や設定をすべて消去して、最初からやり直しますか？');
       if (!ok) return;
       localStorage.removeItem(STORAGE_KEY);
       state = structuredClone(initialData);
@@ -286,6 +309,8 @@ function openModal(modalId) {
   modal.classList.remove('hidden');
 
   if (modalId === 'modal-setup') {
+    document.getElementById('setupUserName').value = state.profile.name || '';
+    document.getElementById('setupUserEmail').value = state.profile.email || '';
     const s0 = state.savings[0] || { name: '', target: 0, current: 0, deadline: '' };
     document.getElementById('setupSavName').value = s0.name || '';
     document.getElementById('setupSavTarget').value = s0.target || '';
@@ -295,7 +320,11 @@ function openModal(modalId) {
   }
   if (modalId === 'modal-savings') renderSavingsInputs();
   if (modalId === 'modal-categories') renderCategoryAndRecurringLists();
-  if (modalId === 'modal-app') highlightSelectedOptions();
+  if (modalId === 'modal-app') {
+    document.getElementById('appUserName').value = state.profile.name || '';
+    document.getElementById('appUserEmail').value = state.profile.email || '';
+    highlightSelectedOptions();
+  }
 }
 
 function closeAllModals() {
