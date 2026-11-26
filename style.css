@@ -1,0 +1,481 @@
+/* 和菓子くすみ5色テーマ＋線画のミニマル和柄（七宝文様・着色なし） */
+body.theme-sakura {
+  --bg: #f6eef0;
+  --surface: #fffcfd;
+  --surface-alt: #f1e3e7;
+  --accent: #c996a5;
+  --accent-strong: #a86f80;
+  --header-fg: #ffffff;
+  --fg: #493a3e;
+  --border: #e3cad1;
+  --pattern: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23a86f80' stroke-width='0.75' stroke-opacity='0.15'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='0' cy='0' r='30'/%3E%3Ccircle cx='64' cy='0' r='30'/%3E%3Ccircle cx='0' cy='64' r='30'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+body.theme-yomogi {
+  --bg: #eef2ed;
+  --surface: #fcfdfc;
+  --surface-alt: #e2eae0;
+  --accent: #8fa889;
+  --accent-strong: #688263;
+  --header-fg: #ffffff;
+  --fg: #394437;
+  --border: #c8d5c5;
+  --pattern: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23688263' stroke-width='0.75' stroke-opacity='0.15'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='0' cy='0' r='30'/%3E%3Ccircle cx='64' cy='0' r='30'/%3E%3Ccircle cx='0' cy='64' r='30'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* あんこ（くすみパープル要素を効かせた小豆パープル系） */
+body.theme-anko {
+  --bg: #f4f1f6;
+  --surface: #fdfcfd;
+  --surface-alt: #eae4ee;
+  --accent: #b7a8be;
+  --accent-strong: #877291;
+  --header-fg: #ffffff;
+  --fg: #423a47;
+  --border: #dcd3e2;
+  --pattern: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23877291' stroke-width='0.75' stroke-opacity='0.15'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='0' cy='0' r='30'/%3E%3Ccircle cx='64' cy='0' r='30'/%3E%3Ccircle cx='0' cy='64' r='30'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+body.theme-kinako {
+  --bg: #f4efe4;
+  --surface: #fdfbf6;
+  --surface-alt: #eae1cf;
+  --accent: #bfa470;
+  --accent-strong: #947948;
+  --header-fg: #ffffff;
+  --fg: #483f31;
+  --border: #dcd0b7;
+  --pattern: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23947948' stroke-width='0.75' stroke-opacity='0.16'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='0' cy='0' r='30'/%3E%3Ccircle cx='64' cy='0' r='30'/%3E%3Ccircle cx='0' cy='64' r='30'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* みるく（よりホワイト系に寄せたミルキーホワイト） */
+body.theme-milk {
+  --bg: #f9f8f6;
+  --surface: #ffffff;
+  --surface-alt: #f1efe9;
+  --accent: #e8e4dc;
+  --accent-strong: #7f7a70;
+  --header-fg: #44413b;
+  --fg: #44413b;
+  --border: #e6e2da;
+  --pattern: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%237f7a70' stroke-width='0.75' stroke-opacity='0.14'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='0' cy='0' r='30'/%3E%3Ccircle cx='64' cy='0' r='30'/%3E%3Ccircle cx='0' cy='64' r='30'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* フォント＆文字サイズ */
+body.font-gothic { font-family: 'Zen Maru Gothic', sans-serif; }
+body.font-handwriting { font-family: 'Yomogi', cursive; }
+body.font-calligraphy { font-family: 'Yuji Syuku', serif; }
+
+body.size-small { font-size: 13px; }
+body.size-medium { font-size: 16px; }
+body.size-large { font-size: 19px; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: var(--pattern);
+  background-repeat: repeat;
+  color: var(--fg);
+  padding-bottom: 48px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.app-header {
+  background-color: var(--accent);
+  background-image: var(--pattern);
+  color: var(--header-fg);
+  padding: 14px 20px;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.app-title {
+  text-align: center;
+  font-size: 1.4em;
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.wagashi-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.settings-area {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.28);
+  color: var(--header-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  min-width: 195px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 300;
+}
+
+.dropdown-menu button {
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.dropdown-menu button:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu button:hover {
+  background: var(--surface-alt);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.container {
+  max-width: 960px;
+  margin: 22px auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.025);
+}
+
+.card-title {
+  font-size: 1.1em;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+  letter-spacing: 0.05em;
+}
+
+/* 目標貯金 */
+.savings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.saving-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--accent-strong);
+  transition: width 0.25s ease;
+}
+
+/* フォーム＆ボタン */
+.tx-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+input, select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.95em;
+}
+
+.primary-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-strong);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  opacity: 0.92;
+}
+
+.full-btn {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.recurring-box {
+  margin-top: 14px;
+}
+
+.sub-label {
+  display: block;
+  font-size: 0.85em;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+.chip-btn:hover {
+  border-color: var(--accent-strong);
+}
+
+/* 2カラム＆残高＆履歴 */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-wrap {
+  max-width: 270px;
+  margin: 0 auto;
+}
+
+.balance-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-label {
+  font-size: 0.9em;
+  font-weight: 700;
+}
+
+.balance-value {
+  font-size: 1.35em;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.history-list {
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.history-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9em;
+}
+
+.cat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 0.8em;
+  margin: 0 6px;
+}
+
+/* モーダル */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(35, 30, 30, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  z-index: 400;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.close-modal-btn {
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.modal-sub {
+  margin-bottom: 8px;
+  font-size: 1em;
+}
+
+.setting-block {
+  margin-bottom: 18px;
+}
+
+.setting-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.opt-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  color: var(--fg);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.opt-btn.selected {
+  border: 2px solid var(--accent-strong);
+  font-weight: 700;
+}
+
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.manage-list {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.manage-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.manage-list button {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--fg);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.divider {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 16px 0;
+}

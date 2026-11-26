@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家計簿帳</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Yuji+Syuku&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-sakura font-gothic size-medium">
+
+  <header class="app-header">
+    <div class="header-left"></div>
+
+<h1 class="app-title">
+      <span>家計簿帳</span>
+    </h1>
+
+    <div class="settings-area">
+      <button id="settingsBtn" type="button" class="icon-btn" title="設定" aria-label="設定">
+        <svg class="wagashi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="12" r="2.8"/>
+          <path d="M12 2.5v2.5M12 19v2.5M5.28 5.28l1.77 1.77M16.95 16.95l1.77 1.77M2.5 12H5M19 12h2.5M5.28 18.72l1.77-1.77M16.95 7.05l1.77-1.77"/>
+        </svg>
+      </button>
+
+      <div id="settingsMenu" class="dropdown-menu hidden">
+        <button id="openSavingsBtn" type="button">❀ 目標の設定</button>
+        <button id="openCategoriesBtn" type="button">❀ 収支項目の設定</button>
+        <button id="openAppBtn" type="button">❀ アプリ設定</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 目標貯金（最大3種類） -->
+    <section class="card">
+      <h2 class="card-title">❀ 目標</h2>
+      <div id="savingsContainer" class="savings-grid"></div>
+    </section>
+
+    <!-- 収支入力＆定期収支 -->
+    <section class="card">
+      <h2 class="card-title">❀ 収支の記録</h2>
+      <form id="transactionForm" class="tx-form">
+        <div class="form-row">
+          <input type="date" id="txDate" required>
+          <select id="txType">
+            <option value="expense">支出</option>
+            <option value="income">収入</option>
+          </select>
+          <select id="txCategory" required></select>
+        </div>
+        <div class="form-row">
+          <input type="number" id="txAmount" placeholder="金額（円）" required min="1">
+          <input type="text" id="txMemo" placeholder="メモ（任意）">
+          <button type="submit" class="primary-btn">追加</button>
+        </div>
+      </form>
+
+      <div class="recurring-box">
+        <span class="sub-label">定期的な収支をワンクリック追加：</span>
+        <div id="recurringButtons" class="chip-list"></div>
+      </div>
+    </section>
+
+    <!-- 支出円グラフ＆現在の残高・履歴 -->
+    <section class="grid-2col">
+      <div class="card">
+        <h2 class="card-title">❀ 支出の内訳</h2>
+        <div class="chart-wrap">
+          <canvas id="expenseChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">❀ 収支の履歴</h2>
+        <div class="balance-card">
+          <span class="balance-label">現在の残高</span>
+          <span id="currentBalance" class="balance-value">¥0</span>
+        </div>
+        <ul id="txHistory" class="history-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- モーダル1：目標貯金の設定 -->
+  <div id="modal-savings" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>❀ 目標の設定（最大3種類）</h3>
+        <button type="button" class="close-modal-btn" data-close="modal-savings">×</button>
+      </div>
+      <div id="savingsFormList"></div>
+      <button id="saveSavingsBtn" type="button" class="primary-btn full-btn">保存する</button>
+    </div>
+  </div>
+
+  <!-- モーダル2：収支項目・カラー＆定期収支の設定 -->
+  <div id="modal-categories" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>❀ 収支項目・定期収支の設定</h3>
+        <button type="button" class="close-modal-btn" data-close="modal-categories">×</button>
+      </div>
+
+      <h4 class="modal-sub">収支項目の追加（カラー設定）</h4>
+      <div class="form-row">
+        <select id="newCatType">
+          <option value="expense">支出</option>
+          <option value="income">収入</option>
+        </select>
+        <input type="text" id="newCatName" placeholder="項目名（例：食費）">
+        <input type="color" id="newCatColor" value="#c996a5">
+        <button id="addCategoryBtn" type="button" class="primary-btn">追加</button>
+      </div>
+      <ul id="categoryManageList" class="manage-list"></ul>
+
+      <hr class="divider">
+
+      <h4 class="modal-sub">定期的な収支の登録</h4>
+      <div class="form-row">
+        <input type="text" id="recTitle" placeholder="名称（例：家賃・給料）">
+        <select id="recCategory"></select>
+        <input type="number" id="recAmount" placeholder="金額" min="1">
+        <button id="addRecurringBtn" type="button" class="primary-btn">登録</button>
+      </div>
+      <ul id="recurringManageList" class="manage-list"></ul>
+    </div>
+  </div>
+
+  <!-- モーダル3：アプリ設定 -->
+  <div id="modal-app" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>❀ アプリ設定</h3>
+        <button type="button" class="close-modal-btn" data-close="modal-app">×</button>
+      </div>
+
+      <div class="setting-block">
+        <label class="setting-label">カラーテーマ</label>
+        <div class="option-row">
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-sakura">
+            <span class="dot" style="background:#c996a5;"></span>さくら
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-yomogi">
+            <span class="dot" style="background:#8fa889;"></span>よもぎ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-anko">
+            <span class="dot" style="background:#b7a8be;"></span>あんこ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-kinako">
+            <span class="dot" style="background:#bfa470;"></span>きなこ
+          </button>
+          <button type="button" class="opt-btn" data-setting="theme" data-value="theme-milk">
+            <span class="dot" style="background:#e8e4dc;"></span>みるく
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <label class="setting-label">フォント</label>
+        <div class="option-row">
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-gothic">ゴシック</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-handwriting">手書き</button>
+          <button type="button" class="opt-btn" data-setting="font" data-value="font-calligraphy">習字</button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <label class="setting-label">文字サイズ</label>
+        <div class="option-row">
+          <button type="button" class="opt-btn" data-setting="size" data-value="size-small">小</button>
+          <button type="button" class="opt-btn" data-setting="size" data-value="size-medium">中</button>
+          <button type="button" class="opt-btn" data-setting="size" data-value="size-large">大</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
